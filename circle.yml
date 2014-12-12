@@ -4,4 +4,9 @@ dependencies:
 
 test:
   override:
+    - $ANDROID_HOME/tools/emulator -avd testing -no-window -no-boot-anim -no-audio:
+        background: true
+        parallel: true
+    - ant debug
+    - bin/android-wait-for-emulator
     - bin/android-run-instrumentation-tests
