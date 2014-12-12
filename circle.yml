@@ -4,4 +4,4 @@ dependencies:
 
 test:
   override:
-    - bin/android-run-instrumentation-tests
+    - echo y | bin/android-run-instrumentation-tests
