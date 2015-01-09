@@ -2,63 +2,6 @@
 
 export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
 
-while true; do
-  BOOTUP=$(adb shell getprop init.svc.bootanim | grep -oe '[a-z]\+')
-  if [[ "$BOOTUP" = "stopped" ]]; then
-    break
-  fi
-
-  echo "Got: '$BOOTUP', waiting for 'stopped'"
-  sleep 5
-done
-```
-
-Then, you need to boot up your emulator (in the background), start your build, wait for your
-emulator to finish booting, and then run your tests.
-In your `circle.yml` file, it will look something like
-
-```
-test:
-  override:
-  - $ANDROID_HOME/tools/emulator -avd testing -no-window -no-boot-anim -no-audio:
-      background: true
-      parallel: true
-  - # start your build here
-  - ./wait.sh:
-      parallel: true
-  - # install your APK
-  - # run your tests
-```
-
-### Running your tests
-
-The standard way to run tests in the Android emulator is with something like
-
-```
-adb logcat &
-adb wait-for-device
-adb shell am instrument -w com.myapp.test/android.test.InstrumentationTestRunner
-```
-
-Unfortunately, this always succeeds, even if the tests fail.
-(There's a known bug that `adb shell` doesn't set its exit
-code to reflect the command that was run.
-See [Android issue 3254](https://code.google.com/p/android/issues/detail?id=3254).)
-
-The only way around this is to parse your test output in a script
-and check to see if your tests passed.
-For example, if the tests pass, there should be a line that looks like
-`OK (15 tests)`.
-
-Here's an example bash script that uses Python to look for that pattern,
-and exits with code 0 (success) if the success line is found, and otherwise
-with code 1 (error).
-
-```
-#!/bin/bash
-
-export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/tools:$PATH"
-
 # clear the logs
 adb logcat -c
 
@@ -71,7 +14,7 @@ import threading
 import time
 
 done = False
-test_app = sys.argv[2]
+test_app = sys.argv[1]
 
 def update():
   # prevent CircleCI from killing the process for inactivity
