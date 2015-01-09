@@ -1,8 +1,6 @@
 machine:
   environment:
-    CACHE_DIR: /home/ubuntu/cache
-    ANDROID_HOME: /home/ubuntu/cache/android-sdk-linux
-    GRADLE_HOME: /home/ubuntu/cache/gradle-2.2.1
+    ANDROID_HOME: /home/ubuntu/android-sdk-linux
     GRADLE_OPTS: -Xmx512m
 
 dependencies:
